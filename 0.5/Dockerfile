@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM openjdk:8-jdk-slim as builder
+FROM openjdk:8-jdk as builder
 
 ARG JANUS_VERSION=0.5.2
 
@@ -24,7 +24,7 @@ ENV JANUS_VERSION=${JANUS_VERSION} \
     JANUS_HOME=/opt/janusgraph
 
 # COPY janusgraph-${JANUS_VERSION} /opt/janusgraph
-RUN apt-get update -y && apt-get install -y curl gpg unzip
+# RUN apt-get update -y && apt-get install -y curl gpg unzip
 
 RUN curl -fSL https://github.com/JanusGraph/janusgraph/releases/download/v${JANUS_VERSION}/janusgraph-${JANUS_VERSION}.zip -o janusgraph.zip && \
     curl -fSL https://github.com/JanusGraph/janusgraph/releases/download/v${JANUS_VERSION}/janusgraph-${JANUS_VERSION}.zip.asc -o janusgraph.zip.asc && \
@@ -36,23 +36,23 @@ RUN curl -fSL https://github.com/JanusGraph/janusgraph/releases/download/v${JANU
     rm -rf ${JANUS_HOME}/elasticsearch && \
     rm -rf ${JANUS_HOME}/javadocs && \
     rm -rf ${JANUS_HOME}/log && \
-    rm -rf ${JANUS_HOME}/examples && \
-    rm -rf ${JANUS_HOME}/conf/hadoop-graph && \
-    rm -rf ${JANUS_HOME}/conf/solr && \
-    rm ${JANUS_HOME}/lib/*cassandra* \
-       ${JANUS_HOME}/lib/*hbase* \
-       ${JANUS_HOME}/lib/*elasticsearch* \
-      #  ${JANUS_HOME}/lib/*hadoop* \
-      #  ${JANUS_HOME}/lib/*spark* \
-       ${JANUS_HOME}/lib/*solr* \
-       ${JANUS_HOME}/lib/*zookeeper*
+    rm -rf ${JANUS_HOME}/examples
+    # rm -rf ${JANUS_HOME}/conf/hadoop-graph && \
+    # rm -rf ${JANUS_HOME}/conf/solr && \
+    # rm ${JANUS_HOME}/lib/*cassandra* \
+    #    ${JANUS_HOME}/lib/*hbase* \
+    #    ${JANUS_HOME}/lib/*elasticsearch* \
+    #   #  ${JANUS_HOME}/lib/*hadoop* \
+    #   #  ${JANUS_HOME}/lib/*spark* \
+    #    ${JANUS_HOME}/lib/*solr* \
+    #    ${JANUS_HOME}/lib/*zookeeper*
 
-RUN apt-get purge -y curl gpg unzip
+# RUN apt-get purge -y curl gpg unzip
 
 COPY conf/janusgraph-berkeleyje-lucene-server.properties conf/log4j-server.properties ${JANUS_HOME}/conf/gremlin-server/
 COPY scripts/remote-connect.groovy ${JANUS_HOME}/scripts/
 
-FROM openjdk:8-jdk-slim
+FROM openjdk:8-jdk
 
 ARG CREATED=test
 ARG REVISION=test
